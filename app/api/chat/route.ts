@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const formattedPreviousMessages = messages
       .slice(0, -1)
       .map((message: UIMessage) =>
-      `${message.role === "user" ? "Human" : "Assistant"}: ${message.role}`
+      `${message.role === "user" ? "Human" : "Assistant"}: ${message.parts?.[0]?.text}`
       )
       .join("\n");
     if (!currentQuestion?.trim()) {
@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
       { status: 400 }
       );
     }
+
+    console.log(formattedPreviousMessages)
         const model = new ChatGoogleGenerativeAI({
             model: "gemini-2.5-pro",
             temperature: 0,
