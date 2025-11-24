@@ -36,7 +36,9 @@ const Chat = () => {
         {messages.map((message: UIMessage, index: number) => (
           <div className="w-full px-20" key={index}>
             {message.role === "assistant" ? (
-              <ReactMarkdown>{message.parts[0].text}</ReactMarkdown>
+              <div className="border-b border-gray-300 pb-4">
+                <ReactMarkdown>{message.parts[0].text}</ReactMarkdown>
+              </div>
             ) : (
               <div className="w-full flex justify-end  ">
                 <p
@@ -60,8 +62,9 @@ const Chat = () => {
             className="border-2 py-4 rounded-2xl px-2 max-w-[400px] w-full placeholder:text-gray-500 text-gray-500"
           />
           <Button
-            className="bg-blue-600 text-white rounded-full"
+            className="bg-blue-600 text-white rounded-full cursor-pointer"
             onClick={handleSbbmit}
+            disabled={status === "submitted"}
           >
             Submit
           </Button>

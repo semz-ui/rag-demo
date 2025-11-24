@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(formattedPreviousMessages)
         const model = new ChatGoogleGenerativeAI({
             model: "gemini-2.5-pro",
             temperature: 0,
