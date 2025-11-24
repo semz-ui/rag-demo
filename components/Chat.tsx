@@ -6,6 +6,7 @@ import { UIMessage, useChat } from "@ai-sdk/react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { scrollToBottom } from "@/lib/utils";
+import { isTextUIPart } from "ai";
 
 const Chat = () => {
   const { messages, status, sendMessage } = useChat();
@@ -30,26 +31,36 @@ const Chat = () => {
     return () => clearTimeout(timer);
   }, [messages]);
 
+    const getMessageText = (message: UIMessage): string => {
+    return message.parts
+      .filter(isTextUIPart)
+      .map(part => part.text)
+      .join(' ');
+  };
+
   return (
     <div className="flex flex-col justify-center items-center h-dvh w-dvw py-8">
       <div className="flex flex-col gap-8 mb-8 flex-1 overflow-scroll" ref={containerRef}>
-        {messages.map((message: UIMessage, index: number) => (
+        {messages.map((message: UIMessage, index: number) => {
+          const messageText = getMessageText(message);
+          return (
           <div className="w-full px-20" key={index}>
             {message.role === "assistant" ? (
               <div className="border-b border-gray-300 pb-4">
-                <ReactMarkdown>{message.parts[0].text}</ReactMarkdown>
+                <ReactMarkdown>{messageText}</ReactMarkdown>
               </div>
             ) : (
               <div className="w-full flex justify-end  ">
                 <p
                   className={`text-black text-right bg-amber-50 rounded-full w-[500px] p-4`}
                 >
-                  {message.parts[0].text}
+                  {messageText}
                 </p>
               </div>
             )}
           </div>
-        ))}
+        )
+        })}
       </div>
       <div>
         {status === "submitted" && <p className="text-center py-2">Thinking....</p>}

@@ -3,7 +3,7 @@ import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain
 import { getPineconeClient } from "@/lib/pinecone-client";
 import { getVectorStore } from "@/lib/vector-store";
 import { processUserMessage } from "@/lib/langchain";
-import { createUIMessageStreamResponse, streamText, UIMessage } from "ai";
+import { createUIMessageStreamResponse, streamText, UIMessage,isTextUIPart } from "ai";
 import { toUIMessageStream } from '@ai-sdk/langchain';
 
 export async function POST(req: NextRequest) {
@@ -17,12 +17,16 @@ export async function POST(req: NextRequest) {
       );
     }
     const currentMessage = messages[messages.length - 1] as UIMessage;
-    const currentQuestion = currentMessage?.parts?.[0]?.text;
+     const textParts = currentMessage.parts.filter(isTextUIPart);
+    const currentQuestion = textParts.map(part => part.text).join(' ');
     const formattedPreviousMessages = messages
       .slice(0, -1)
-      .map((message: UIMessage) =>
-      `${message.role === "user" ? "Human" : "Assistant"}: ${message.parts?.[0]?.text}`
-      )
+      .map((message: UIMessage) => {
+        const messageParts = message.parts.filter(isTextUIPart);
+        const text = messageParts.map(part => part.text).join(' ');
+        return `${message.role === "user" ? "Human" : "Assistant"}: ${text}`;
+      })
+      .filter(msg => msg.trim().length > 0) // Remove empty messages
       .join("\n");
     if (!currentQuestion?.trim()) {
       return NextResponse.json(
