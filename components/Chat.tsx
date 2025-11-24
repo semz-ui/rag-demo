@@ -25,63 +25,96 @@ const Chat = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-        scrollToBottom(containerRef);
-
+      scrollToBottom(containerRef);
     }, 100);
     return () => clearTimeout(timer);
   }, [messages]);
 
-    const getMessageText = (message: UIMessage): string => {
+  const getMessageText = (message: UIMessage): string => {
     return message.parts
       .filter(isTextUIPart)
-      .map(part => part.text)
-      .join(' ');
+      .map((part) => part.text)
+      .join(" ");
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-dvh w-dvw py-8">
-      <div className="flex flex-col gap-8 mb-8 flex-1 overflow-scroll" ref={containerRef}>
-        {messages.map((message: UIMessage, index: number) => {
-          const messageText = getMessageText(message);
-          return (
-          <div className="w-full px-20" key={index}>
-            {message.role === "assistant" ? (
-              <div className="border-b border-gray-300 pb-4">
-                <ReactMarkdown>{messageText}</ReactMarkdown>
-              </div>
-            ) : (
-              <div className="w-full flex justify-end  ">
-                <p
-                  className={`text-black text-right bg-amber-50 rounded-full w-[500px] p-4`}
-                >
-                  {messageText}
-                </p>
-              </div>
+    <>
+      {messages.length === 0 ? (
+        <div className="flex flex-col justify-center items-center h-dvh w-dvw">
+          <p className="py-14">Hello, Ask me anything about material selection!</p>
+          <div>
+            {status === "submitted" && (
+              <p className="text-center py-2">Thinking....</p>
             )}
+            <div className="flex w-dvw justify-center gap-2">
+              <Input
+                type="text"
+                placeholder="Ask anything"
+                value={input}
+                onChange={(e) => set_input(e.target.value)}
+                className="border-2 py-4 rounded-2xl px-2 max-w-[400px] w-full placeholder:text-gray-500 text-gray-500"
+              />
+              <Button
+                className="bg-blue-600 text-white rounded-full cursor-pointer"
+                onClick={handleSbbmit}
+                disabled={status === "submitted"}
+              >
+                Submit
+              </Button>
+            </div>
           </div>
-        )
-        })}
-      </div>
-      <div>
-        {status === "submitted" && <p className="text-center py-2">Thinking....</p>}
-        <div className="flex w-dvw justify-center gap-2">
-          <Input
-            type="text"
-            placeholder="Ask anything"
-            value={input}
-            onChange={(e) => set_input(e.target.value)}
-            className="border-2 py-4 rounded-2xl px-2 max-w-[400px] w-full placeholder:text-gray-500 text-gray-500"
-          />
-          <Button
-            className="bg-blue-600 text-white rounded-full cursor-pointer"
-            onClick={handleSbbmit}
-            disabled={status === "submitted"}
-          >
-            Submit
-          </Button>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center h-dvh w-dvw py-8">
+          <div
+            className="flex flex-col gap-8 mb-8 flex-1 overflow-scroll"
+            ref={containerRef}
+          >
+            {messages.map((message: UIMessage, index: number) => {
+              const messageText = getMessageText(message);
+              return (
+                <div className="w-full px-20" key={index}>
+                  {message.role === "assistant" ? (
+                    <div className="border-b border-gray-300 pb-4">
+                      <ReactMarkdown>{messageText}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <div className="w-full flex justify-end  ">
+                      <p
+                        className={`text-black text-right bg-amber-50 rounded-full w-[500px] p-4`}
+                      >
+                        {messageText}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div>
+            {status === "submitted" && (
+              <p className="text-center py-2">Thinking....</p>
+            )}
+            <div className="flex w-dvw justify-center gap-2">
+              <Input
+                type="text"
+                placeholder="Ask anything"
+                value={input}
+                onChange={(e) => set_input(e.target.value)}
+                className="border-2 py-4 rounded-2xl px-2 max-w-[400px] w-full placeholder:text-gray-500 text-gray-500"
+              />
+              <Button
+                className="bg-blue-600 text-white rounded-full cursor-pointer"
+                onClick={handleSbbmit}
+                disabled={status === "submitted"}
+              >
+                Submit
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
