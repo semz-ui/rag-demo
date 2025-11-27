@@ -26,9 +26,9 @@ export async function processUserMessage({
   try {
     // Create non-streaming model for inquiry generation
     const nonStreamingModel = new ChatGoogleGenerativeAI({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash-lite",
       temperature: 0,
-      streaming: true,
+      streaming: false,
       apiKey: env.GEMINI_API_KEY,
     });
 
@@ -42,7 +42,7 @@ export async function processUserMessage({
       });
 
     // Get relevant documents
-    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 5);
+    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 3);
     const context = relevantDocs.map((doc) => doc.pageContent).join("\n\n");
 
     // Generate answer using streaming model
@@ -108,6 +108,7 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
     - Don't speculate beyond the given information
     - If the context is insufficient, explicitly state what's missing
     - Ask for clarification if the question is ambiguous
+    - When you do not have an answer, simply confirm if the question is not related to the context and reply that to the user
 
     When you cannot answer based on the context:
     1. State clearly that the context lacks the necessary information

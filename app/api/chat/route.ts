@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
         const model = new ChatGoogleGenerativeAI({
-            model: "gemini-2.5-pro",
+            model: "gemini-2.5-flash-lite",
             temperature: 0,
             maxRetries: 2,
             apiKey: process.env.GEMINI_API_KEY,
